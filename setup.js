@@ -13,13 +13,37 @@
      */
 
     /** Load the Core library **/
-    Platform.Load("Core", "1.1");
+    Platform.Load("core", "1.1");
+
+    /** 
+     * Set the application environment
+     * 
+     * dev - Enables error and message logging in the console
+     * prod - disables error and message logging in the console
+     **/
+    var env = "dev";
+
+    /** 
+     * Set the Debug Mode
+     * 
+     * If debugMode = true, the error and message loggin in the 
+     * console is enabled, irrespective of the 'env' value. This
+     * is useful if you just wish to see the console log in the
+     * prod env. 
+     **/
+    var debugMode = Request.GetQueryStringParameter("debug");
+
+    /**
+     * Enable Browser Console Logging for dev env and debugMode
+     */
+    if(env == "dev" || debugMode == "true") {
+
+        var console = new console();
+        console.log("Debug mode is ON");
+    }
 
     /** Load WSProxy **/
-    var wsProxy = new Script.Util.WSProxy();
-
-    /** Set Debug Mode **/
-    var debugMode = Request.GetQueryStringParameter("debug");
+    var wsproxy = new Script.Util.WSProxy();
 
     /** Global Output Variable **/
     var gblOutput = [];
@@ -60,6 +84,26 @@
         addOutput(wsResult.Status + " : Retrieve 'Folder ID' success. [" + objData.name + " | " + folderId + "]");
 
         return folderId;
+    }
+
+    /**
+     * Helper function to enable the Browser console.log
+     * method in SSJS scripts.
+     */
+    function console() {
+
+        if(env == "dev" || debugMode == "true") {
+
+            var args = Platform.Function.Stringify(Array.from(arguments));
+
+            this.log = function() {
+                Write("<script>console.log.apply(console," + args + ")<\/script>");
+            };
+
+            this.error = function() {
+                Write("<script>console.error.apply(console," + args + ")<\/script>");
+            };
+        }
     }
 
     /**
