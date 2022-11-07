@@ -15,5 +15,5 @@
     /** Load the Core library **/
     Platform.Load("core", "1.1");
 
-    Write("Hello World!");
+    Write("Hello World Git!");
 </script>
